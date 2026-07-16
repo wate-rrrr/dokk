@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import org.springframework.stereotype.Service;
+
 import dev.langchain4j.data.document.*;
 import dev.langchain4j.data.document.loader.UrlDocumentLoader;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
@@ -19,62 +21,54 @@ import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.embedding.IngestionResult;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 
+@Service
+public class ChatHelperService {
+    public ChatHelperService(){};
 
-public class ChatHelperService{
 
-    Document document = UrlDocumentLoader.load("https://www.alice-in-wonderland.net/wp-content/uploads/alice-in-wonderland.pdf", new TextDocumentParser());
+    public String question(String userMessage,String url) {
 
-    EmbeddingModel embeddingModel = new OpenAiEmbeddingModel(null);    
-    TextSegment textSegment = document.toTextSegment();
-    EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
 
-    EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-    .documentSplitter(DocumentSplitters.recursive(300,0))
-    .embeddingModel(embeddingModel)
-    .embeddingStore(embeddingStore)
-    .build();
+        url = "https://www.alice-in-wonderland.net/wp-content/uploads/alice-in-wonderland.pdf";
+        Document document = UrlDocumentLoader.load(
+                url,
+                new TextDocumentParser());
 
-    ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.from(embeddingStore);
+        EmbeddingModel embeddingModel = new OpenAiEmbeddingModel(null);
+        TextSegment textSegment = document.toTextSegment();
+        EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
 
-    /**
-     * Assistant
-     */
-    interface Assistant {
-        String chat(String userMessage);
-        
+        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+                .documentSplitter(DocumentSplitters.recursive(300, 0))
+                .embeddingModel(embeddingModel)
+                .embeddingStore(embeddingStore)
+                .build();
+
+        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.from(embeddingStore);
+
+        /**
+         * Assistant
+         */
+        interface Assistant {
+            String chat(String userMessage);
+
+        }
+
+        ChatModel chatModel = OpenAiChatModel.builder()
+                .apiKey(System.getenv("HF_API_KEY"))
+                .baseUrl("https://router.huggingface.co/v1")
+                .modelName("HuggdingFaceTB/SmolLM3-3B:hf-inference")
+                .build();
+
+        Assistant assistant = AiServices.builder(Assistant.class)
+                .chatModel(chatModel)
+                .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
+                .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
+                .build();
+
+        String answer = assistant.chat(userMessage);
+        return answer;
+
     }
-    
-    ChatModel chatModel = OpenAiChatModel.builder()
-    .apiKey(System.getenv("HF_API_KEY"))
-    .baseUrl("https://router.huggingface.co/v1")
-    .modelName("HuggdingFaceTB/SmolLM3-3B:hf-inference")
-    .build();
-    
-    
-    
 
-
-    Assistant assistant = AiServices.builder(Assistant.class)
-    .chatModel(chatModel)
-    .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
-    .contentRetriever(EmbeddingStoreContentRetriever.from(embeddingStore))
-    .build();
-
-    
-
-    String answer = assistant.chat("who is red queen")
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-    
 }

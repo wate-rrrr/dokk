@@ -32,7 +32,7 @@ repositories {
 dependencies {
 	implementation 'dev.langchain4j:langchain4j:1.17.2'
 	implementation 'dev.langchain4j:langchain4j-open-ai:1.17.2'
-	implementation 'dev.langchain4j:langchain4j-embedded-store:1.17.2'
+	
 
   	checkstyle 'com.puppycrawl.tools:checkstyle:13.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
