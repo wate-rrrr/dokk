@@ -2,10 +2,12 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+
 
 java {
 	toolchain {
@@ -13,21 +15,39 @@ java {
 	}
 }
 
+checkstyle {
+  toolVersion = '13.7.0'
+  configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")}
+
 repositories {
-	mavenCentral()
+  mavenCentral()
+	maven { url 'https://maven.aliyun.com/repository/public/' }
+  maven { url 'https://mirrors.tencent.com/nexus/repository/maven-central/' }
+  maven { url 'https://maven.aliyun.com/repository/google' }
+
 }
 
+
+
 dependencies {
-	implementation 'dev.langchain4j:langchain4j:1.17.1'
-	implementation 'dev.langchain4j:langchain4j-open-ai:1.17.1'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'dev.langchain4j:langchain4j:1.17.2'
+	implementation 'dev.langchain4j:langchain4j-open-ai:1.17.2'
+	implementation 'dev.langchain4j:langchain4j-embedded-store:1.17.2'
+
+  	checkstyle 'com.puppycrawl.tools:checkstyle:13.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	implementation 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	implementation 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+springBoot {
+	mainClass = 'com.example.demo.Pro2Application'	
+
+}
+
