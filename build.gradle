@@ -18,16 +18,22 @@ repositories {
 }
 
 dependencies {
-	implementation 'dev.langchain4j:langchain4j:1.17.1'
-	implementation 'dev.langchain4j:langchain4j-open-ai:1.17.1'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'dev.langchain4j:langchain4j:1.17.2'
+	implementation 'dev.langchain4j:langchain4j-open-ai:1.17.2'
+	implementation 'dev.langchain4j:langchain4j-embedded-store:1.17.2'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+springBoot {
+	mainClass = 'com.example.demo.Pro2Application'	
+
 }
